@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Room - Grand Horizon</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #d4af37; --light: #f8f9fa; --dark: #1a252f; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--light); color: var(--dark); }
+        nav { background: var(--primary); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; text-decoration: none; margin-left: 1.5rem; }
+        nav a:hover, nav a.active { color: var(--accent); }
+        .form-container { max-width: 600px; margin: 3rem auto; background: white; padding: 2.5rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { margin-bottom: 1.5rem; color: var(--primary); }
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        input, select { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+        button { background: var(--primary); color: white; width: 100%; padding: 0.75rem; border: none; font-size: 1rem; font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s; }
+        button:hover { background: var(--accent); color: var(--dark); }
+        .alert { display: none; padding: 1rem; background: #d4edda; color: #155724; border-radius: 4px; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div style="color: white; font-size: 1.5rem; font-weight: bold;">🏨 Grand Horizon</div>
+        <div>
+            <a href="index.html">Home</a>
+            <a href="rooms.html">Rooms</a>
+            <a href="booking.html" class="active">Book Now</a>
+            <a href="dashboard.html">Admin Panel</a>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <h2>Room Reservation Form</h2>
+        <div class="alert" id="successAlert">🎉 Reservation submitted successfully! Head to the Admin Panel to check details.</div>
+        
+        <form id="bookingForm" onsubmit="saveBooking(event)">
+            <div class="form-group">
+                <label>Guest Full Name</label>
+                <input type="text" id="guestName" required placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label>Room Category</label>
+                <select id="roomSelection">
+                    <option value="Standard Room ($120)">Standard Room ($120 / Night)</option>
+                    <option value="Executive Deluxe Suite ($250)">Executive Deluxe Suite ($250 / Night)</option>
+                    <option value="Presidential Ocean Suite ($450)">Presidential Ocean Suite ($450 / Night)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Check-in Date</label>
+                <input type="date" id="checkIn" required>
+            </div>
+            <div class="form-group">
+                <label>Duration of Stay (Nights)</label>
+                <input type="number" id="nights" min="1" max="30" value="1" required>
+            </div>
+            <button type="submit">Confirm Reservation</button>
+        </form>
+    </div>
+
+    <script>
+        function saveBooking(e) {
+            e.preventDefault();
+            const newBooking = {
+                id: 'RES-' + Math.floor(Math.random() * 9000 + 1000),
+                name: document.getElementById('guestName').value,
+                room: document.getElementById('roomSelection').value,
+                date: document.getElementById('checkIn').value,
+                nights: document.getElementById('nights').value
+            };
+
+            let currentBookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            currentBookings.push(newBooking);
+            localStorage.setItem('bookings', JSON.stringify(currentBookings));
+
+            document.getElementById('successAlert').style.display = 'block';
+            document.getElementById('bookingForm').reset();
+            
+            setTimeout(() => {
+                document.getElementById('successAlert').style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

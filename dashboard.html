@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Dashboard - Grand Horizon</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #d4af37; --light: #f8f9fa; --dark: #1a252f; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--light); color: var(--dark); }
+        nav { background: var(--primary); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; text-decoration: none; margin-left: 1.5rem; }
+        nav a:hover, nav a.active { color: var(--accent); }
+        .dashboard-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .box { background: white; padding: 1.5rem; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid var(--primary); }
+        .box h3 { font-size: 0.9rem; text-transform: uppercase; color: #7f8c8d; }
+        .box p { font-size: 1.8rem; font-weight: bold; color: var(--primary); }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: var(--primary); color: white; }
+        .btn-del { background: #e74c3c; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; }
+        .btn-del:hover { background: #c0392b; }
+        .empty-state { text-align: center; padding: 3rem; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div style="color: white; font-size: 1.5rem; font-weight: bold;">🏨 Grand Horizon</div>
+        <div>
+            <a href="index.html">Home</a>
+            <a href="rooms.html">Rooms</a>
+            <a href="booking.html">Book Now</a>
+            <a href="dashboard.html" class="active">Admin Panel</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <h2 style="margin-bottom: 1.5rem;">Reception Operations Desk</h2>
+        
+        <div class="metrics">
+            <div class="box">
+                <h3>Total Bookings</h3>
+                <p id="totalCount">0</p>
+            </div>
+            <div class="box" style="border-left-color: var(--accent);">
+                <h3>Housekeeping Status</h3>
+                <p>98% Ready</p>
+            </div>
+        </div>
+
+        <h3>Active Incoming Bookings</h3>
+        <div style="overflow-x: auto; margin-top: 1rem;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Guest Name</th>
+                        <th>Selected Room</th>
+                        <th>Check-In</th>
+                        <th>Nights</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsTableBody">
+                    <!-- Dynamic rendering happens here -->
+                </tbody>
+            </table>
+            <div id="noData" class="empty-state">No reservations currently registered.</div>
+        </div>
+    </div>
+
+    <script>
+        function loadDashboardData() {
+            const bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            const tbody = document.getElementById('bookingsTableBody');
+            const noData = document.getElementById('noData');
+            
+            document.getElementById('totalCount').innerText = bookings.length;
+            tbody.innerHTML = '';
+
+            if (bookings.length === 0) {
+                noData.style.display = 'block';
+                return;
+            }
+            noData.style.display = 'none';
+
+            bookings.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.id}</strong></td>
+                    <td>${item.name}</td>
+                    <td>${item.room}</td>
+                    <td>${item.date}</td>
+                    <td>${item.nights} Days</td>
+                    <td><button class="btn-del" onclick="checkoutGuest(${index})">Checkout</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function checkoutGuest(index) {
+            let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+            bookings.splice(index, 1);
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+            loadDashboardData();
+        }
+
+        // Initialize display upon navigation
+        window.onload = loadDashboardData;
+    </script>
+</body>
+</html>
